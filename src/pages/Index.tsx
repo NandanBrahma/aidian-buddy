@@ -9,6 +9,7 @@ import { ErrorCard } from "@/components/ErrorCard";
 import { FixSuggestionCard } from "@/components/FixSuggestionCard";
 import { DiagnosticResult } from "@/components/DiagnosticResult";
 import { ProgressStep } from "@/components/ProgressStep";
+import { NextActionTag } from "@/components/NextActionTag";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
@@ -115,12 +116,15 @@ const Index = () => {
 
           <TabsContent value="overview" className="space-y-6 animate-fade-in">
             {currentView === "error" && (
-              <ErrorCard
-                title="Error Detected in Authentication Flow"
-                description="I noticed an error in your app. The authentication module is failing to validate user tokens correctly. This may prevent users from logging in successfully."
-                onShowFix={handleShowFixes}
-                onIgnore={() => toast({ title: "Error ignored", description: "You can address this later." })}
-              />
+              <div className="space-y-3">
+                <NextActionTag text="Recommended Next Step" />
+                <ErrorCard
+                  title="Error Detected in Authentication Flow"
+                  description="I noticed an error in your app. The authentication module is failing to validate user tokens correctly. This may prevent users from logging in successfully."
+                  onShowFix={handleShowFixes}
+                  onIgnore={() => toast({ title: "Error ignored", description: "You can address this later." })}
+                />
+              </div>
             )}
 
             {currentView === "diagnostic" && (
@@ -190,14 +194,17 @@ const Index = () => {
           <TabsContent value="fixes" className="space-y-4 animate-fade-in">
             {currentView === "fixes" && (
               <>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Fix Options Available</CardTitle>
-                    <CardDescription>
-                      Choose the solution that best matches your app's requirements. Each fix has been analyzed for safety and effectiveness.
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
+                <div className="space-y-3">
+                  <NextActionTag text="Choose a Fix" />
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Fix Options Available</CardTitle>
+                      <CardDescription>
+                        Choose the solution that best matches your app's requirements. Each fix has been analyzed for safety and effectiveness.
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                </div>
 
                 <div className="grid gap-4">
                   <FixSuggestionCard
