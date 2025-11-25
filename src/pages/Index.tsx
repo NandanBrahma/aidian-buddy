@@ -10,12 +10,14 @@ import { FixSuggestionCard } from "@/components/FixSuggestionCard";
 import { DiagnosticResult } from "@/components/DiagnosticResult";
 import { ProgressStep } from "@/components/ProgressStep";
 import { NextActionTag } from "@/components/NextActionTag";
+import { DeploymentProgress, DeploymentStage } from "@/components/DeploymentProgress";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [credits, setCredits] = useState(25);
   const [appStatus, setAppStatus] = useState<"healthy" | "error" | "warning" | "processing">("error");
   const [currentView, setCurrentView] = useState<"dashboard" | "error" | "fixes" | "diagnostic" | "deploying">("error");
+  const [deploymentStage, setDeploymentStage] = useState<DeploymentStage>("error-detection");
   const { toast } = useToast();
 
   const handleShowFixes = () => {
@@ -29,6 +31,7 @@ const Index = () => {
     }
     setCredits(prev => prev - 1);
     setCurrentView("fixes");
+    setDeploymentStage("fix-selection");
   };
 
   const handleApplyFix = () => {
@@ -43,8 +46,14 @@ const Index = () => {
     setCredits(prev => prev - 2);
     setAppStatus("processing");
     setCurrentView("deploying");
+    setDeploymentStage("fix-application");
     
     setTimeout(() => {
+      setDeploymentStage("testing");
+    }, 1500);
+    
+    setTimeout(() => {
+      setDeploymentStage("ready-to-deploy");
       setAppStatus("healthy");
       toast({
         title: "Fix Applied Successfully! 🎉",
@@ -64,6 +73,7 @@ const Index = () => {
     }
     setCredits(prev => prev - 1);
     setCurrentView("diagnostic");
+    setDeploymentStage("diagnostic");
   };
 
   return (
@@ -90,29 +100,38 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Status Overview */}
-        <Card className="mb-6 bg-gradient-card">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Activity className="h-8 w-8 text-primary" />
-                <div>
-                  <h2 className="text-2xl font-bold">App Health Monitor</h2>
-                  <p className="text-sm text-muted-foreground">Real-time status tracking</p>
+        {/* Progress Tracker */}
+        <div className="mb-6 grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <Card className="bg-gradient-card">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <Activity className="h-8 w-8 text-primary" />
+                    <div>
+                      <h2 className="text-2xl font-bold">App Health Monitor</h2>
+                      <p className="text-sm text-muted-foreground">Real-time status tracking</p>
+                    </div>
+                  </div>
+                  <StatusIndicator status={appStatus} />
                 </div>
-              </div>
-              <StatusIndicator status={appStatus} />
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="lg:row-span-2">
+            <DeploymentProgress currentStage={deploymentStage} className="sticky top-24" />
+          </div>
+        </div>
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="fixes">Fixes & Solutions</TabsTrigger>
-            <TabsTrigger value="deploy">Deployment</TabsTrigger>
-          </TabsList>
+        <div className="lg:grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <Tabs defaultValue="overview" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="fixes">Fixes & Solutions</TabsTrigger>
+                <TabsTrigger value="deploy">Deployment</TabsTrigger>
+              </TabsList>
 
           <TabsContent value="overview" className="space-y-6 animate-fade-in">
             {currentView === "error" && (
@@ -289,18 +308,20 @@ const Index = () => {
                 </Button>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
+            </TabsContent>
+            </Tabs>
 
-        {/* Encouraging Message */}
-        <Card className="mt-8 border-accent/20 bg-accent/5">
+            {/* Encouraging Message */}
+            <Card className="mt-8 border-accent/20 bg-accent/5">
           <CardContent className="pt-6">
             <p className="text-center text-sm text-muted-foreground">
               💡 <strong>You're doing great!</strong> Debugging is a normal part of building.
               I'll help you through each step until your app is ready to deploy.
             </p>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+          </div>
+        </div>
       </main>
     </div>
   );
