@@ -49,17 +49,13 @@ const Index = () => {
     setDeploymentStage("fix-application");
     
     setTimeout(() => {
-      setDeploymentStage("testing");
-    }, 800);
-    
-    setTimeout(() => {
       setDeploymentStage("ready-to-deploy");
       setAppStatus("healthy");
       toast({
         title: "Fix Applied Successfully! 🎉",
         description: "Your app is now running smoothly.",
       });
-    }, 1600);
+    }, 800);
   };
 
   const handleRunDiagnostic = () => {
