@@ -53,9 +53,9 @@ const Index = () => {
       setAppStatus("healthy");
       toast({
         title: "Fix Applied Successfully! 🎉",
-        description: "Your app is now running smoothly.",
+        description: "Your app is now running smoothly and ready to deploy.",
       });
-    }, 800);
+    }, 300);
   };
 
   const handleRunDiagnostic = () => {
