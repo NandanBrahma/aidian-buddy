@@ -72,6 +72,23 @@ const Index = () => {
     setDeploymentStage("diagnostic");
   };
 
+  const handleDeploy = () => {
+    if (credits < 1) {
+      toast({
+        title: "Insufficient Credits",
+        description: "You need at least 1 credit to deploy.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setCredits(prev => prev - 1);
+    setDeploymentStage("deployed");
+    toast({
+      title: "Deployment Complete! 🚀",
+      description: "Your app is now live in production.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
       {/* Header */}
@@ -299,7 +316,7 @@ const Index = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button className="w-full" size="lg">
+                <Button className="w-full" size="lg" onClick={handleDeploy}>
                   Deploy Now (1 credit)
                 </Button>
               </CardContent>
