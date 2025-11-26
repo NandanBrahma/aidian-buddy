@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Sparkles, Shield, Rocket, Activity } from "lucide-react";
+import { Sparkles, Shield, Rocket, Activity, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,7 +11,9 @@ import { DiagnosticResult } from "@/components/DiagnosticResult";
 import { ProgressStep } from "@/components/ProgressStep";
 import { NextActionTag } from "@/components/NextActionTag";
 import { DeploymentProgress, DeploymentStage } from "@/components/DeploymentProgress";
+import { IntegrationTooltip } from "@/components/IntegrationTooltip";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [credits, setCredits] = useState(25);
@@ -19,6 +21,7 @@ const Index = () => {
   const [currentView, setCurrentView] = useState<"dashboard" | "error" | "fixes" | "diagnostic" | "deploying">("error");
   const [deploymentStage, setDeploymentStage] = useState<DeploymentStage>("error-detection");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleShowFixes = () => {
     if (credits < 1) {
@@ -95,19 +98,33 @@ const Index = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/")}
+                className="mr-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
               <div className="h-10 w-10 rounded-lg bg-gradient-hero flex items-center justify-center">
                 <Sparkles className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold">Guided Debug Assistant</h1>
-                <p className="text-xs text-muted-foreground">AI-Powered Error Resolution</p>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-bold">Guided Debug Assistant</h1>
+                  <IntegrationTooltip content="In production, this would appear as a tool in the Lovable toolbar, similar to Cloud or Analytics" />
+                </div>
+                <p className="text-xs text-muted-foreground">Interactive Demo • Prototype Feature</p>
               </div>
             </div>
-            <CreditBadge 
-              credits={credits} 
-              variant={credits < 5 ? "warning" : "default"} 
-            />
+            <div className="flex items-center gap-2">
+              <IntegrationTooltip content="Credit system integrates with Lovable's existing credit model" />
+              <CreditBadge 
+                credits={credits} 
+                variant={credits < 5 ? "warning" : "default"} 
+              />
+            </div>
           </div>
         </div>
       </header>
@@ -149,10 +166,13 @@ const Index = () => {
           <TabsContent value="overview" className="space-y-6 animate-fade-in">
             {currentView === "error" && (
               <div className="space-y-3">
-                <NextActionTag text="Recommended Next Step" />
+                <div className="flex items-center gap-2 mb-3">
+                  <NextActionTag text="Recommended Next Step" />
+                  <IntegrationTooltip content="Errors would be automatically detected from console logs and network requests in the Lovable preview" />
+                </div>
                 <ErrorCard
                   title="Error Detected in Authentication Flow"
-                  description="I noticed an error in your app. The authentication module is failing to validate user tokens correctly. This may prevent users from logging in successfully."
+                  description="Your app's authentication module is failing to validate JWT tokens. The JWT_SECRET environment variable is missing, causing token verification to fail and preventing users from staying logged in."
                   onShowFix={handleShowFixes}
                   onIgnore={() => toast({ title: "Error ignored", description: "You can address this later." })}
                 />
@@ -160,24 +180,35 @@ const Index = () => {
             )}
 
             {currentView === "diagnostic" && (
-              <DiagnosticResult
-                findings={[
-                  {
-                    type: "error",
-                    title: "Missing JWT Secret",
-                    description: "The JWT_SECRET environment variable is not configured in your production environment.",
-                    location: "auth.config.ts:12"
-                  },
-                  {
-                    type: "warning",
-                    title: "Token Expiration Too Long",
-                    description: "Current token expiration is set to 30 days. Consider reducing for better security.",
-                    location: "auth.config.ts:24"
-                  }
-                ]}
-                onSuggestFixes={handleShowFixes}
-                onShowCode={() => toast({ title: "Code View", description: "Opening impacted code sections..." })}
-              />
+              <>
+                <div className="flex items-center gap-2 mb-3">
+                  <IntegrationTooltip content="Deep diagnostics would analyze your full codebase, edge functions, and Supabase configuration" />
+                </div>
+                <DiagnosticResult
+                  findings={[
+                    {
+                      type: "error",
+                      title: "Missing JWT Secret",
+                      description: "The JWT_SECRET environment variable is not configured in your production environment. This is blocking token validation in src/auth/verify.ts.",
+                      location: "src/auth/config.ts:12"
+                    },
+                    {
+                      type: "warning",
+                      title: "Token Expiration Too Long",
+                      description: "Current token expiration is set to 30 days. Security best practice recommends 7 days maximum for web apps.",
+                      location: "src/auth/config.ts:24"
+                    },
+                    {
+                      type: "warning",
+                      title: "Missing Rate Limiting",
+                      description: "Authentication endpoints lack rate limiting, making them vulnerable to brute force attacks.",
+                      location: "src/api/auth/login.ts:8"
+                    }
+                  ]}
+                  onSuggestFixes={handleShowFixes}
+                  onShowCode={() => toast({ title: "Code View", description: "Opening impacted code sections..." })}
+                />
+              </>
             )}
 
             <Card className="hover:shadow-md transition-shadow">
@@ -211,12 +242,15 @@ const Index = () => {
             {currentView === "fixes" && (
               <>
                 <div className="space-y-3">
-                  <NextActionTag text="Choose a Fix" />
+                  <div className="flex items-center gap-2">
+                    <NextActionTag text="Choose a Fix" />
+                    <IntegrationTooltip content="AI would analyze your codebase context and suggest fixes tailored to your specific setup" />
+                  </div>
                   <Card>
                     <CardHeader>
                       <CardTitle>Fix Options Available</CardTitle>
                       <CardDescription>
-                        Choose the solution that best matches your app's requirements. Each fix has been analyzed for safety and effectiveness.
+                        Choose the solution that best matches your app's requirements. Each fix has been analyzed for safety, effectiveness, and compatibility with your existing code.
                       </CardDescription>
                     </CardHeader>
                   </Card>
@@ -225,25 +259,25 @@ const Index = () => {
                 <div className="grid gap-4">
                   <FixSuggestionCard
                     title="Configure JWT Secret (Recommended)"
-                    description="Add the missing JWT_SECRET environment variable with a secure random string. This will resolve the authentication validation errors."
+                    description="Add JWT_SECRET to your Lovable secrets, generate a secure 256-bit key, and update your auth config to use it. This fix will automatically apply the changes to src/auth/config.ts and add the secret to your environment."
                     creditCost={2}
                     recommended
                     onApply={handleApplyFix}
-                    onExplain={() => toast({ title: "Explanation", description: "This fix adds proper environment configuration..." })}
+                    onExplain={() => toast({ title: "Detailed Explanation", description: "This fix will: 1) Generate a cryptographically secure random string, 2) Add it to Lovable secrets, 3) Update your auth config to reference it, 4) Test the authentication flow." })}
                   />
                   <FixSuggestionCard
-                    title="Switch to OAuth Provider"
-                    description="Migrate authentication to a third-party OAuth provider like Auth0 or Firebase. This eliminates the need for manual JWT management."
+                    title="Switch to Supabase Auth"
+                    description="Migrate to Supabase's built-in authentication system. Works seamlessly with Lovable Cloud, handles JWT management automatically, and includes social login support out of the box."
                     creditCost={3}
-                    onApply={() => toast({ title: "Apply", description: "This would require more extensive changes..." })}
-                    onExplain={() => toast({ title: "Explanation", description: "OAuth providers handle authentication..." })}
+                    onApply={() => toast({ title: "Migration Preview", description: "This would require: 1) Enabling Lovable Cloud, 2) Replacing custom auth with Supabase client, 3) Updating UI components to use Supabase hooks. Estimated 15-20 minutes." })}
+                    onExplain={() => toast({ title: "Supabase Auth Benefits", description: "Built-in security, automatic token refresh, social providers (Google, GitHub, etc.), and no manual JWT handling. Perfect for Lovable Cloud projects." })}
                   />
                   <FixSuggestionCard
                     title="Implement Session-Based Auth"
-                    description="Replace JWT tokens with server-side session management using secure cookies. Better for certain use cases but requires backend state."
+                    description="Replace JWT with server-side sessions using HTTP-only cookies. Requires adding session middleware to your edge functions and database table for session storage."
                     creditCost={3}
-                    onApply={() => toast({ title: "Apply", description: "This approach uses server sessions..." })}
-                    onExplain={() => toast({ title: "Explanation", description: "Session-based auth stores..." })}
+                    onApply={() => toast({ title: "Session Auth Preview", description: "Would create: 1) Session middleware edge function, 2) Sessions database table, 3) Updated auth endpoints, 4) Secure cookie handling. More complex but better for sensitive apps." })}
+                    onExplain={() => toast({ title: "Session Auth Details", description: "Sessions store auth state server-side, making tokens un-stealable by XSS. Trade-off: slightly more complex infrastructure and database usage." })}
                   />
                 </div>
               </>
@@ -254,15 +288,19 @@ const Index = () => {
             {currentView === "deploying" && deploymentStage === "fix-application" && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Applying Fix</CardTitle>
-                  <CardDescription>Validating and applying your selected fix...</CardDescription>
+                  <div className="flex items-center gap-2">
+                    <CardTitle>Applying Fix</CardTitle>
+                    <IntegrationTooltip content="Changes would be applied directly to your project files and verified before deployment" />
+                  </div>
+                  <CardDescription>Validating compatibility, applying code changes, and running safety checks...</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ProgressStep
                     steps={[
-                      { label: "Validating fix compatibility", status: "current" },
-                      { label: "Applying code changes", status: "pending" },
-                      { label: "Ready for deployment", status: "pending" },
+                      { label: "Validating fix compatibility with your codebase", status: "current" },
+                      { label: "Applying code changes to src/auth/config.ts", status: "pending" },
+                      { label: "Adding JWT_SECRET to Lovable secrets", status: "pending" },
+                      { label: "Running auth tests and security checks", status: "pending" },
                     ]}
                   />
                 </CardContent>
@@ -272,29 +310,39 @@ const Index = () => {
             {deploymentStage === "ready-to-deploy" && (
               <Card className="border-success/20 bg-success/5">
                 <CardHeader>
-                  <CardTitle className="text-success">✓ Fix Applied Successfully</CardTitle>
-                  <CardDescription>All checks passed - your app is ready for production</CardDescription>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-success">✓ Fix Applied Successfully</CardTitle>
+                    <IntegrationTooltip content="In production, you'd see the actual files changed and could review them in Dev Mode before deploying" />
+                  </div>
+                  <CardDescription>All checks passed - your app is ready for production deployment</CardDescription>
                 </CardHeader>
               </Card>
             )}
 
             <Card>
               <CardHeader>
-                <CardTitle>Pre-Deployment Checklist</CardTitle>
+                <div className="flex items-center gap-2">
+                  <CardTitle>Pre-Deployment Checklist</CardTitle>
+                  <IntegrationTooltip content="Would integrate with Lovable's existing deployment checks before the Publish button finalizes" />
+                </div>
                 <CardDescription>Everything looks good for deployment!</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-center gap-3 p-3 rounded-lg bg-success/10 border border-success/20">
                   <Shield className="h-5 w-5 text-success" />
-                  <span className="text-sm">All API keys are configured</span>
+                  <span className="text-sm">JWT_SECRET configured in Lovable secrets</span>
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-lg bg-success/10 border border-success/20">
                   <Shield className="h-5 w-5 text-success" />
-                  <span className="text-sm">No unhandled errors detected</span>
+                  <span className="text-sm">No console errors detected in preview</span>
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-lg bg-success/10 border border-success/20">
                   <Shield className="h-5 w-5 text-success" />
-                  <span className="text-sm">Model configuration verified</span>
+                  <span className="text-sm">Authentication flow tested successfully</span>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-success/10 border border-success/20">
+                  <Shield className="h-5 w-5 text-success" />
+                  <span className="text-sm">Edge functions verified and ready</span>
                 </div>
               </CardContent>
             </Card>
