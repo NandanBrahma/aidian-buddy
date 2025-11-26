@@ -180,29 +180,13 @@ const Index = () => {
               />
             )}
 
-            <div className="grid md:grid-cols-3 gap-4">
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <Shield className="h-8 w-8 text-success mb-2" />
-                  <CardTitle className="text-base">Security</CardTitle>
-                  <CardDescription>All checks passed</CardDescription>
-                </CardHeader>
-              </Card>
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <Activity className="h-8 w-8 text-primary mb-2" />
-                  <CardTitle className="text-base">Performance</CardTitle>
-                  <CardDescription>Optimal response time</CardDescription>
-                </CardHeader>
-              </Card>
-              <Card className="hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <Rocket className="h-8 w-8 text-warning mb-2" />
-                  <CardTitle className="text-base">Deployment</CardTitle>
-                  <CardDescription>Ready to deploy</CardDescription>
-                </CardHeader>
-              </Card>
-            </div>
+            <Card className="hover:shadow-md transition-shadow">
+              <CardHeader>
+                <Shield className="h-8 w-8 text-success mb-2" />
+                <CardTitle className="text-base">Security</CardTitle>
+                <CardDescription>All checks passed</CardDescription>
+              </CardHeader>
+            </Card>
 
             <Card>
               <CardHeader>
