@@ -267,22 +267,30 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="deploy" className="space-y-6 animate-fade-in">
-            {currentView === "deploying" && (
+            {currentView === "deploying" && deploymentStage === "fix-application" && (
               <Card>
                 <CardHeader>
                   <CardTitle>Applying Fix</CardTitle>
-                  <CardDescription>This may take a moment - ensuring no new issues are introduced</CardDescription>
+                  <CardDescription>Validating and applying your selected fix...</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ProgressStep
                     steps={[
-                      { label: "Validating fix compatibility", status: "completed" },
-                      { label: "Applying code changes", status: "completed" },
-                      { label: "Running safety tests", status: "current" },
-                      { label: "Updating deployment", status: "pending" },
+                      { label: "Validating fix compatibility", status: "current" },
+                      { label: "Applying code changes", status: "pending" },
+                      { label: "Ready for deployment", status: "pending" },
                     ]}
                   />
                 </CardContent>
+              </Card>
+            )}
+            
+            {deploymentStage === "ready-to-deploy" && (
+              <Card className="border-success/20 bg-success/5">
+                <CardHeader>
+                  <CardTitle className="text-success">✓ Fix Applied Successfully</CardTitle>
+                  <CardDescription>All checks passed - your app is ready for production</CardDescription>
+                </CardHeader>
               </Card>
             )}
 
