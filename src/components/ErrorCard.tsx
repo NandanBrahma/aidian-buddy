@@ -43,7 +43,7 @@ export const ErrorCard = ({
         <CardContent className="flex gap-2">
           {onShowFix && (
             <Button onClick={onShowFix} variant="default">
-              Show Fix Options
+              Show Fix Options (1 credit)
             </Button>
           )}
           {onIgnore && (
